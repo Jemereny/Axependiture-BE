@@ -1,0 +1,33 @@
+{
+  "name": "AxependitureBE",
+  "version": "1.0.0",
+  "repository": "git@github.com:Jemereny/AxependitureBE.git",
+  "author": "Jeremy Chan <jeremy@connectedfreight.com>",
+  "license": "MIT",
+  "scripts": {
+    "dev": "sst dev --stage dev",
+    "deploy": "sst deploy --stage prod",
+    "remove": "sst remove",
+    "test": "jest --no-coverage"
+  },
+  "devDependencies": {
+    "@aws-sdk/client-dynamodb": "^3.370.0",
+    "@tsconfig/node18": "^18.2.0",
+    "@types/aws-lambda": "^8.10.119",
+    "@types/node": "^20.4.1",
+    "@types/node-telegram-bot-api": "^0.61.6",
+    "aws-cdk-lib": "^2.87.0",
+    "aws-lambda": "^1.0.7",
+    "jest": "^29.6.1",
+    "sst": "^2.19.1",
+    "ts-jest": "^29.1.1",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.1.6"
+  },
+  "dependencies": {
+    "@types/jest": "^29.5.3",
+    "date-fns": "^2.30.0",
+    "dynamodb-onetable": "^2.6.3",
+    "node-telegram-bot-api": "^0.61.0"
+  }
+}

@@ -1,0 +1,64 @@
+{
+  "version": "2.0",
+  "routeKey": "POST /update",
+  "rawPath": "/update",
+  "rawQueryString": "",
+  "headers": {
+    "accept-encoding": "gzip, deflate",
+    "content-length": "341",
+    "content-type": "application/json",
+    "host": "3ln78jnuif.execute-api.ap-southeast-1.amazonaws.com",
+    "x-amzn-trace-id": "Root=1-64b18147-000e64e52fecc725335b5266",
+    "x-forwarded-for": "91.108.6.53",
+    "x-forwarded-port": "443",
+    "x-forwarded-proto": "https",
+    "x-telegram-bot-api-secret-token": "872e4e50ce9990d8b041330c47c9ddd11bec6b503ae9386a99da8584e9bb12c4"
+  },
+  "requestContext": {
+    "accountId": "064592600659",
+    "apiId": "3ln78jnuif",
+    "domainName": "3ln78jnuif.execute-api.ap-southeast-1.amazonaws.com",
+    "domainPrefix": "3ln78jnuif",
+    "http": {
+      "method": "POST",
+      "path": "/update",
+      "protocol": "HTTP/1.1",
+      "sourceIp": "91.108.6.53",
+      "userAgent": ""
+    },
+    "requestId": "IEEjKgKsSQ0EMlA=",
+    "routeKey": "POST /update",
+    "stage": "$default",
+    "time": "14/Jul/2023:17:09:27 +0000",
+    "timeEpoch": 1689354567195
+  },
+  "body": {
+    "update_id": 439508184,
+    "message": {
+      "message_id": 14,
+      "from": {
+        "id": 227035704,
+        "is_bot": false,
+        "first_name": "JellyMe",
+        "username": "JellyMe",
+        "language_code": "en"
+      },
+      "chat": {
+        "id": 227035704,
+        "first_name": "JellyMe",
+        "username": "JellyMe",
+        "type": "private"
+      },
+      "date": 1689354564,
+      "text": "/spend abcdefg",
+      "entities": [
+        {
+          "offset": 0,
+          "length": 6,
+          "type": "bot_command"
+        }
+      ]
+    }
+  },
+  "isBase64Encoded": false
+}
