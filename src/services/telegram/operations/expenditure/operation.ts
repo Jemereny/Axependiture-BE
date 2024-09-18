@@ -9,6 +9,7 @@ import {
   TelegramParsedArgs,
 } from '../operations';
 import { CustomDateOperation } from './custom-date';
+import { ShowCustomMonthOperation } from './show-custom-month';
 import { TodayOperation } from './today';
 
 type ExpenditureParsedArgs = null;
@@ -28,6 +29,7 @@ export class ExpenditureOperation extends TelegramOperation<
       telegramOperationArgs,
       {
         [TodayOperation.operationCommand]: TodayOperation,
+        [ShowCustomMonthOperation.operationCommand]: ShowCustomMonthOperation,
         [CustomDateOperation.operationCommand]: CustomDateOperation,
         [CancelOperation.operationCommand]: CancelOperation,
       },
@@ -62,6 +64,11 @@ async function successResponse(runResponse: RunResponse): Promise<TelegramOperat
     [
       makeTelegramInlineButton('Custom Date', ExpenditureOperation.operationCommand, [
         CustomDateOperation.operationCommand,
+      ]),
+    ],
+    [
+      makeTelegramInlineButton('Custom Month', ExpenditureOperation.operationCommand, [
+        ShowCustomMonthOperation.operationCommand,
       ]),
     ],
     [

@@ -162,4 +162,28 @@ export class DynamoDBPersistence {
 
     return expenditures;
   }
+
+  async getEarliestExpenditure(): Promise<Expenditure | null> {
+    const expenditure = await this.expenditureModel.find(
+      {},
+      {
+        limit: 1,
+        reverse: false,
+      },
+    );
+
+    return expenditure.pop() || null;
+  }
+
+  async getLatestExpenditure(): Promise<Expenditure | null> {
+    const expenditure = await this.expenditureModel.find(
+      {},
+      {
+        limit: 1,
+        reverse: true,
+      },
+    );
+
+    return expenditure.pop() || null;
+  }
 }
