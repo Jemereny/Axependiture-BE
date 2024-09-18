@@ -30,10 +30,6 @@ const monthIndexToMonth: Record<number, string> = {
   10: 'November',
   11: 'December',
 };
-const CALENDAR_PREV_COMMAND = 'prev';
-const CALENDAR_NEXT_COMMAND = 'next';
-const CALENDAR_CANCEL_COMMAND = 'cancel';
-const CALENDAR_SELECT_COMMAND = 'select';
 export const BUTTON_CALLBACK_CALENDAR_COMMAND = 'calendar';
 
 /**
@@ -83,20 +79,19 @@ export function generateCalendar(year: number, month: number): (number | undefin
 }
 
 /**
- * Generates the telegram calendar with InlineKeyboardButtons and it's callback_data
+ * Generates the telegram calendar with InlineKeyboardButtons and its callback_data
  *
  * E.g. Button example for a button that moves to next month
  * {
  *    'text': '>',
- *    'callback_data': '/command calendar next'
+ *    'callback_data': '/command /shft 2024-04-01T10:00:000Z'
  * }
- * /command - is parsed in the handler method to tell us what command generated this inline keyboard
- * calendar - is parsed in the command's `parsedArgs` method to tell how to handle the callback_data
- * next - actual callback_data to perform action
  * @param year
  * @param month
- * @param command
- * @returns
+ * @param command to give context on the command that invokes this method
+ * @param selectCommand to give context on the command to invoke when the button is pressed
+ * @param cancelCommand to give context on the command to invoke when the button is pressed
+ * @returns a generated calendar
  */
 export function generateTelegramCalendar(
   year: number,
@@ -141,6 +136,7 @@ export function generateTelegramCalendar(
   // Next and previous buttons
   telegramCalendarKeyboardButtons.push(
     [
+      // TechDebt: To add '/shft' as variable
       makeTelegramInlineButton('<', command, ['/shft', Date.UTC(year, month - 1, 1).toString()]),
       makeTelegramInlineButton('>', command, ['/shft', Date.UTC(year, month + 1, 1).toString()]),
     ],
@@ -148,84 +144,4 @@ export function generateTelegramCalendar(
   );
 
   return telegramCalendarKeyboardButtons;
-}
-
-export type ParsedCalendarArgs =
-  | ParsedPrevCommand
-  | ParsedNextCommand
-  | ParsedCancelCommand
-  | ParsedSelectCommand;
-
-type ParsedPrevCommand = {
-  subCommand: typeof CALENDAR_PREV_COMMAND;
-  prevDate: Date;
-};
-type ParsedNextCommand = {
-  subCommand: typeof CALENDAR_NEXT_COMMAND;
-  nextDate: Date;
-};
-type ParsedCancelCommand = {
-  subCommand: typeof CALENDAR_CANCEL_COMMAND;
-};
-type ParsedSelectCommand = {
-  subCommand: typeof CALENDAR_SELECT_COMMAND;
-  startDate: Date;
-  endDate: Date;
-};
-
-export type CalendarCommandRunResponse =
-  | {
-      callbackCommand: typeof BUTTON_CALLBACK_CALENDAR_COMMAND;
-      parsedArgs: ParsedCalendarArgs;
-    }
-  | CalendarSelectedCommandRunResponse;
-
-export type CalendarSelectedCommandRunResponse = {
-  callbackCommand: typeof BUTTON_CALLBACK_CALENDAR_COMMAND;
-  parsedArgs: ParsedSelectCommand;
-  categoryToExpenditure: Record<string, number>;
-};
-
-export function parseTelegramCalendarCommand(argsWithoutCommand: string[]): ParsedCalendarArgs {
-  const [_, calendarButtonCommand, value] = argsWithoutCommand;
-
-  switch (calendarButtonCommand) {
-    case CALENDAR_PREV_COMMAND:
-      const prevDate = new Date(Number(value));
-      return {
-        subCommand: CALENDAR_PREV_COMMAND,
-        prevDate,
-      };
-
-    case CALENDAR_NEXT_COMMAND: {
-      const nextDate = new Date(Number(value));
-      return {
-        subCommand: CALENDAR_NEXT_COMMAND,
-        nextDate,
-      };
-    }
-    case CALENDAR_CANCEL_COMMAND:
-      return {
-        subCommand: CALENDAR_CANCEL_COMMAND,
-      };
-    case CALENDAR_SELECT_COMMAND:
-      const startDate = new Date(Number(value));
-      startDate.setUTCHours(0);
-      startDate.setUTCMinutes(0);
-      startDate.setUTCSeconds(0);
-
-      const endDate = new Date(Number(value));
-      endDate.setUTCHours(23);
-      endDate.setUTCMinutes(59);
-      endDate.setUTCSeconds(59);
-
-      console.log(startDate, endDate);
-      return {
-        subCommand: CALENDAR_SELECT_COMMAND,
-        startDate,
-        endDate,
-      };
-    default:
-      throw new Error(`Calendar command ${calendarButtonCommand} not handled`);
-  }
 }
