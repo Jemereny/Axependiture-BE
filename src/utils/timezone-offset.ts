@@ -45,7 +45,7 @@ export const LIST_OF_UTC_TIMEZONE_OFFSET = [
   '+14:00',
 ];
 
-export function getDateFromOffset(date: Date, timezoneOffset: string) {
+export function getDateFromOffset(date: Date, timezoneOffset: string = '+00:00') {
   const isPositive = timezoneOffset.substring(0, 1) === '+';
   const [offsetHour, offsetMinutes] = timezoneOffset.substring(1).split(':');
   const offset: Duration = { hours: Number(offsetHour), minutes: Number(offsetMinutes) };
