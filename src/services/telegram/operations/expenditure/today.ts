@@ -1,5 +1,5 @@
 import { makeTelegramInlineButton } from '../../../../utils/telegram-inline-button';
-import { formatDate, getDateFromOffset } from '../../../../utils/timezone-offset';
+import { formatDate, getDateFromOffset, getDayRangeFromOffset } from '../../../../utils/timezone-offset';
 import { CancelOperation } from '../common/cancel';
 import {
   OperationArgs,
@@ -45,20 +45,14 @@ export class TodayOperation extends TelegramOperation<TodayParsedArgs, RunRespon
     const persistenceTimezoneOffset = await dynamoDBPersistence.getTimezoneOffset();
 
     // Default offset to +00:00 if timezone is not set
-    const currentDate = getDateFromOffset(new Date(), persistenceTimezoneOffset || '+00:00');
-    const startDate = new Date(currentDate);
-    startDate.setUTCHours(0);
-    startDate.setUTCMinutes(0);
-    startDate.setUTCSeconds(0);
-
-    const endDate = new Date(currentDate);
-    endDate.setUTCHours(23);
-    endDate.setUTCMinutes(59);
-    endDate.setUTCSeconds(59);
-
+    const currentDateTime = new Date();
+    const { startDateTimeInUTC, endDateTimeInUTC } = getDayRangeFromOffset(
+      currentDateTime,
+      persistenceTimezoneOffset || undefined,
+    );
     const expenditures = await dynamoDBPersistence.getExpenditureForDateRange({
-      startDateInUTC: startDate,
-      endDateInUTC: endDate,
+      startDateInUTC: startDateTimeInUTC,
+      endDateInUTC: endDateTimeInUTC,
     });
 
     const categoryToExpenditure = expenditures.reduce((acc, value) => {
@@ -67,9 +61,11 @@ export class TodayOperation extends TelegramOperation<TodayParsedArgs, RunRespon
       return acc;
     }, {} as Record<string, number>);
 
+    const datetimeWithOffset = getDateFromOffset(currentDateTime, persistenceTimezoneOffset || undefined);
+
     return {
       type: 'success',
-      currentDate,
+      currentDate: datetimeWithOffset,
       categoryToExpenditure,
     };
   }

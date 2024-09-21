@@ -1,5 +1,4 @@
-import { endOfMonth, startOfMonth } from 'date-fns';
-import { formatDate, getDateFromOffset } from '../../../../../utils/timezone-offset';
+import { formatDate, getMonthRangeFromOffset } from '../../../../../utils/timezone-offset';
 import { CalendarSelectOperation, CalendarSelectParsedArgs } from '../../common/calendar/select';
 import {
   OperationArgs,
@@ -28,14 +27,14 @@ export class ExpenditureCalendarSelectMonthOperation extends CalendarSelectOpera
     const { dynamoDBPersistence } = services;
 
     const timezoneOffset = await dynamoDBPersistence.getTimezoneOffset();
-    const startDate = startOfMonth(selectedDate);
-    const endDate = endOfMonth(selectedDate);
+    const { startDateTimeInUTC, endDateTimeInUTC } = getMonthRangeFromOffset(
+      selectedDate,
+      timezoneOffset || undefined,
+    );
 
-    const startDateWithOffset = getDateFromOffset(startDate, timezoneOffset ?? undefined);
-    const endDateWithOffset = getDateFromOffset(endDate, timezoneOffset ?? undefined);
     const expenditures = await dynamoDBPersistence.getExpenditureForDateRange({
-      startDateInUTC: startDateWithOffset,
-      endDateInUTC: endDateWithOffset,
+      startDateInUTC: startDateTimeInUTC,
+      endDateInUTC: endDateTimeInUTC,
     });
 
     const categoryToExpenditure = expenditures.reduce((acc, value) => {

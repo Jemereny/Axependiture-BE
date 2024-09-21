@@ -1,4 +1,4 @@
-import { formatDate } from '../../../../../utils/timezone-offset';
+import { formatDate, getDateFromOffset, getDayRangeFromOffset } from '../../../../../utils/timezone-offset';
 import { CalendarSelectOperation, CalendarSelectParsedArgs } from '../../common/calendar/select';
 import {
   OperationArgs,
@@ -26,12 +26,16 @@ export class ExpenditureCalendarSelectOperation extends CalendarSelectOperation<
     const { selectedDate } = args;
     const { dynamoDBPersistence } = services;
 
-    const startDate = getStartOfDay(selectedDate);
-    const endDate = getEndOfDay(selectedDate);
+    const persistenceTimezoneOffset = await dynamoDBPersistence.getTimezoneOffset();
 
+    // Default offset to +00:00 if timezone is not set
+    const { startDateTimeInUTC, endDateTimeInUTC } = getDayRangeFromOffset(
+      selectedDate,
+      persistenceTimezoneOffset || undefined,
+    );
     const expenditures = await dynamoDBPersistence.getExpenditureForDateRange({
-      startDateInUTC: startDate,
-      endDateInUTC: endDate,
+      startDateInUTC: startDateTimeInUTC,
+      endDateInUTC: endDateTimeInUTC,
     });
 
     const categoryToExpenditure = expenditures.reduce((acc, value) => {
@@ -42,7 +46,7 @@ export class ExpenditureCalendarSelectOperation extends CalendarSelectOperation<
 
     return {
       type: 'success',
-      selectedDate,
+      selectedDate: selectedDate,
       categoryToExpenditure,
     };
   }
@@ -59,22 +63,4 @@ async function successResponse(runResponse: RunResponse): Promise<TelegramOperat
   return {
     message: `Your expenditure for ${formatDate(selectedDate, 'do MMM yyyy')}:${expenditureInString}`,
   };
-}
-
-function getStartOfDay(date: Date) {
-  const startDate = new Date(date);
-  startDate.setUTCHours(0);
-  startDate.setUTCMinutes(0);
-  startDate.setUTCSeconds(0);
-
-  return startDate;
-}
-
-function getEndOfDay(date: Date) {
-  const endDate = new Date(date);
-  endDate.setUTCHours(23);
-  endDate.setUTCMinutes(59);
-  endDate.setUTCSeconds(59);
-
-  return endDate;
 }
